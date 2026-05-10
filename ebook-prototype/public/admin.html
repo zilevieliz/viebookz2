@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writer's Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --gray-1: #f7f7f7;
+      --gray-2: #eeeeee;
+      --gray-3: #a0a0a0;
+      --gray-4: #606060;
+      --border: #e2e2e2;
+      --green: #1a6b3a;
+      --red: #8b1a1a;
+    }
+
+    html { font-size: 16px; }
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: 'EB Garamond', serif;
+      font-size: 18px;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .header-label { font-size: 12px; color: var(--gray-3); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px; border-radius: 6px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400;
+      cursor: pointer; border: 1px solid; transition: all 0.15s;
+      letter-spacing: 0.01em; text-decoration: none;
+    }
+    .btn-black  { background: var(--black); color: var(--white); border-color: var(--black); }
+    .btn-black:hover { background: #222; }
+    .btn-outline { background: transparent; color: var(--gray-4); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--black); color: var(--black); }
+    .btn-ghost  { background: transparent; color: var(--gray-3); border-color: transparent; font-size: 12px; }
+    .btn-ghost:hover { color: var(--red); }
+    .btn-green  { background: var(--green); color: var(--white); border-color: var(--green); }
+    .btn-green:hover { background: #145530; }
+    .btn-red    { background: transparent; color: var(--red); border-color: #e2c2c2; }
+    .btn-red:hover { background: #fff5f5; }
+    .hidden { display: none !important; }
+
+    /* LOGIN */
+    .login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 56px); padding: 40px 20px;
+    }
+    .login-card {
+      width: 100%; max-width: 360px; text-align: center;
+    }
+    .login-glyph {
+      font-family: 'EB Garamond', serif;
+      font-size: 48px; display: block; margin-bottom: 24px; color: var(--black);
+    }
+    .login-card h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 28px; font-weight: 400; margin-bottom: 8px;
+    }
+    .login-card p { font-size: 14px; color: var(--gray-3); margin-bottom: 32px; }
+    .login-card input {
+      width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 15px; font-family: 'DM Sans', sans-serif;
+      font-weight: 300; outline: none; margin-bottom: 12px;
+      text-align: center; letter-spacing: 0.12em; background: var(--gray-1);
+      transition: border-color 0.15s;
+    }
+    .login-card input:focus { border-color: var(--black); background: var(--white); }
+    .login-error { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
+
+    /* DASHBOARD */
+    #dashboard { display: none; }
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 20px 12px;
+      background: var(--gray-1);
+    }
+    .sidebar-label {
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--gray-3); padding: 0 8px; margin-bottom: 8px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; color: var(--gray-4);
+      border: 1px solid transparent; transition: all 0.1s; gap: 8px;
+    }
+    .sidebar-item:hover { background: var(--gray-2); color: var(--black); }
+    .sidebar-item.active { background: var(--white); border-color: var(--border); color: var(--black); }
+    .sidebar-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-3); flex-shrink: 0; }
+    .dot.live { background: var(--green); }
+    .sidebar-sep { height: 1px; background: var(--border); margin: 10px 0; }
+    .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+    .new-btn {
+      width: 100%; padding: 9px 10px; border-radius: 6px;
+      border: 1px dashed var(--gray-2); background: none;
+      font-size: 13px; color: var(--gray-3); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      text-align: left; transition: all 0.15s;
+    }
+    .new-btn:hover { border-color: var(--black); color: var(--black); }
+
+    /* EDITOR */
+    .editor { display: flex; flex-direction: column; padding: 32px 40px; gap: 20px; }
+    .editor-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; flex: 1; color: var(--gray-3); text-align: center; gap: 10px;
+    }
+    .editor-empty .glyph { font-family: 'EB Garamond', serif; font-size: 56px; opacity: 0.2; }
+    .editor-empty p { font-size: 14px; }
+
+    .editor-top {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .badge {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      letter-spacing: 0.04em; border: 1px solid;
+    }
+    .badge-draft     { background: var(--gray-1); color: var(--gray-3); border-color: var(--border); }
+    .badge-published { background: #f0fff4; color: var(--green); border-color: #c3e6cb; }
+    .editor-actions  { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .title-input {
+      font-family: 'EB Garamond', serif; font-size: 36px; font-weight: 400;
+      border: none; border-bottom: 1px solid var(--border); border-radius: 0;
+      padding: 6px 0; background: none; color: var(--black); outline: none;
+      width: 100%; letter-spacing: -0.01em; transition: border-color 0.15s;
+    }
+    .title-input:focus { border-bottom-color: var(--black); }
+    .title-input::placeholder { color: var(--gray-3); }
+
+    .body-input {
+      width: 100%; min-height: 360px; padding: 16px;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: 'EB Garamond', serif; font-size: 20px; font-weight: 400;
+      line-height: 1.8; background: var(--gray-1); color: #1a1a1a;
+      outline: none; resize: vertical; transition: border-color 0.15s;
+    }
+    .body-input:focus { border-color: var(--black); background: var(--white); }
+    .body-input::placeholder { color: var(--gray-3); font-style: italic; }
+
+    .editor-footer {
+      display: flex; align-items: center; gap: 8px;
+      padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .word-count { font-size: 12px; color: var(--gray-3); margin-left: auto; }
+
+    /* SETTINGS */
+    .settings { padding: 40px; max-width: 520px; }
+    .settings h2 { font-family: 'EB Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 32px; }
+    .field { margin-bottom: 22px; }
+    .field label { display: block; font-size: 12px; color: var(--gray-4); margin-bottom: 6px; letter-spacing: 0.04em; }
+    .field input, .field textarea {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      font-weight: 300; background: var(--gray-1); color: var(--black);
+      outline: none; transition: border-color 0.15s;
+    }
+    .field input:focus, .field textarea:focus { border-color: var(--black); background: var(--white); }
+    .field textarea { resize: vertical; line-height: 1.6; }
+    .field-hint { font-size: 11px; color: var(--gray-3); margin-top: 4px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--black); color: var(--white);
+      font-size: 13px; padding: 10px 18px; border-radius: 6px;
+      opacity: 0; transform: translateY(6px);
+      transition: all 0.2s ease; z-index: 999; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* SPINNER */
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">My Book</a>
+  <div class="header-right">
+    <span class="header-label" id="session-label" style="display:none">Writer</span>
+    <a class="btn btn-outline" href="index.html" target="_blank" style="font-size:12px">↗ Public view</a>
+    <button class="btn btn-ghost hidden" id="logout-btn" onclick="logout()">Sign out</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <span class="login-glyph">✦</span>
+    <h2>Writer's Studio</h2>
+    <p>Enter your passphrase to continue</p>
+    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" autofocus />
+    <button class="btn btn-black" style="width:100%;justify-content:center;padding:12px" onclick="login()">Enter</button>
+    <p class="login-error" id="login-error"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="sidebar-label">Chapters</p>
+      <div id="sidebar-list"></div>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-item" id="settings-item" onclick="openSettings()">
+        <span class="sidebar-item-title">Book settings</span>
+        <span style="font-size:14px;color:var(--gray-3)">⚙</span>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="new-btn" onclick="newChapter()">＋ New chapter</button>
+      </div>
+    </aside>
+
+    <main id="main-panel">
+      <!-- Empty -->
+      <div class="editor" id="pane-empty" style="flex:1;display:flex;">
+        <div class="editor-empty">
+          <span class="glyph">✦</span>
+          <p>Select a chapter or create a new one.</p>
+        </div>
+      </div>
+
+      <!-- Editor -->
+      <div class="editor hidden" id="pane-editor">
+        <div class="editor-top">
+          <span class="badge badge-draft" id="status-badge">Draft</span>
+          <div class="editor-actions">
+            <button class="btn btn-outline" onclick="saveDraft()">Save draft</button>
+            <button class="btn btn-green hidden" id="unpublish-btn" onclick="unpublish()">Unpublish</button>
+            <button class="btn btn-black" id="publish-btn" onclick="publish()">Publish</button>
+            <button class="btn btn-red" onclick="deleteChapter()">Delete</button>
+          </div>
+        </div>
+
+        <input class="title-input" id="ch-title" type="text" placeholder="Chapter title…" oninput="dirty=true" />
+        <textarea class="body-input" id="ch-body" placeholder="Write your chapter here…" oninput="dirty=true;updateWC()"></textarea>
+
+        <div class="editor-footer">
+          <button class="btn btn-outline" style="font-size:12px" onclick="move(-1)">↑ Move up</button>
+          <button class="btn btn-outline" style="font-size:12px" onclick="move(1)">↓ Move down</button>
+          <span class="word-count" id="wc">0 words</span>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="settings hidden" id="pane-settings">
+        <h2>Book settings</h2>
+        <div class="field">
+          <label>Book title</label>
+          <input type="text" id="s-title" placeholder="My Book" />
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="s-desc" rows="3" placeholder="Shown on the public page…"></textarea>
+        </div>
+        <div class="field">
+          <label>Change admin password</label>
+          <input type="password" id="s-pw" placeholder="Leave blank to keep current" />
+          <p class="field-hint">Set ADMIN_PASSWORD in your Vercel environment variables to apply.</p>
+        </div>
+        <button class="btn btn-black" onclick="saveSettings()" style="margin-top:8px">Save settings</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── STATE ── */
+let token      = sessionStorage.getItem('admin_token') || '';
+let chapters   = [];
+let selectedId = null;
+let dirty      = false;
+
+/* ── AUTH ── */
+async function login() {
+  const pw = document.getElementById('pw-input').value.trim();
+  if (!pw) return;
+
+  // Verify by calling admin API
+  try {
+    const res = await fetch('/api/admin', {
+      headers: { 'x-admin-token': pw }
+    });
+    if (res.ok) {
+      token = pw;
+      sessionStorage.setItem('admin_token', token);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display    = 'block';
+      document.getElementById('session-label').style.display = 'inline';
+      document.getElementById('logout-btn').classList.remove('hidden');
+      loadChapters();
+    } else {
+      document.getElementById('login-error').textContent = 'Incorrect passphrase.';
+      document.getElementById('pw-input').value = '';
+    }
+  } catch {
+    document.getElementById('login-error').textContent = 'Could not reach server.';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('admin_token');
+  location.reload();
+}
+
+/* ── BOOT ── */
+(async function boot() {
+  if (!token) return;
+  try {
+    const res = await fetch('/api/admin', { headers: { 'x-admin-token': token } });
+    if (res.ok) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display    = 'block';
+      document.getElementById('session-label').style.display = 'inline';
+      document.getElementById('logout-btn').classList.remove('hidden');
+      loadChapters();
+    } else { token = ''; sessionStorage.removeItem('admin_token'); }
+  } catch { token = ''; }
+})();
+
+/* ── DATA ── */
+async function loadChapters() {
+  const res  = await fetch('/api/admin', { headers: { 'x-admin-token': token } });
+  const data = await res.json();
+  if (data.success) { chapters = data.chapters; renderSidebar(); }
+}
+
+function renderSidebar() {
+  const sorted = [...chapters].sort((a,b) => a.chapter_order - b.chapter_order);
+  const list   = document.getElementById('sidebar-list');
+  list.innerHTML = sorted.length
+    ? sorted.map(ch => `
+        <div class="sidebar-item ${ch.id===selectedId?'active':''}" onclick="openChapter('${ch.id}')">
+          <span class="sidebar-item-title">${esc(ch.title||'Untitled')}</span>
+          <span class="dot ${ch.published?'live':''}"></span>
+        </div>`).join('')
+    : `<p style="font-size:12px;color:var(--gray-3);padding:8px;text-align:center">No chapters yet</p>`;
+}
+
+/* ── CHAPTER OPS ── */
+async function newChapter() {
+  const id  = 'ch_' + Date.now();
+  const ord = chapters.length;
+  const res = await fetch('/api/admin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify({ id, title: '', body: '', published: false, chapter_order: ord })
+  });
+  if ((await res.json()).success) {
+    await loadChapters();
+    openChapter(id);
+  }
+}
+
+function openChapter(id) {
+  if (dirty && selectedId !== id) {
+    if (!confirm('Unsaved changes will be lost. Continue?')) return;
+  }
+  selectedId = id; dirty = false;
+  const ch = chapters.find(c => c.id === id);
+  if (!ch) return;
+
+  showPane('editor');
+  document.getElementById('ch-title').value = ch.title || '';
+  document.getElementById('ch-body').value  = ch.body  || '';
+  updateWC();
+  updateBadge(ch.published);
+  renderSidebar();
+}
+
+async function saveDraft() {
+  if (!selectedId) return;
+  const ch = chapters.find(c => c.id === selectedId);
+  if (!ch) return;
+  ch.title = document.getElementById('ch-title').value;
+  ch.body  = document.getElementById('ch-body').value;
+  const res = await fetch('/api/admin', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify(ch)
+  });
+  if ((await res.json()).success) { dirty = false; renderSidebar(); toast('Saved ✓'); }
+}
+
+async function publish() {
+  await saveDraft();
+  const ch = chapters.find(c => c.id === selectedId);
+  if (!ch) return;
+  ch.published = true;
+  const res = await fetch('/api/admin', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify(ch)
+  });
+  if ((await res.json()).success) { updateBadge(true); renderSidebar(); toast('Published ✓'); }
+}
+
+async function unpublish() {
+  const ch = chapters.find(c => c.id === selectedId);
+  if (!ch) return;
+  ch.published = false;
+  const res = await fetch('/api/admin', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify(ch)
+  });
+  if ((await res.json()).success) { updateBadge(false); renderSidebar(); toast('Unpublished'); }
+}
+
+async function deleteChapter() {
+  if (!confirm('Permanently delete this chapter?')) return;
+  await fetch('/api/admin', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify({ id: selectedId })
+  });
+  chapters = chapters.filter(c => c.id !== selectedId);
+  selectedId = null; dirty = false;
+  showPane('empty');
+  renderSidebar();
+  toast('Deleted');
+}
+
+async function move(dir) {
+  const sorted = [...chapters].sort((a,b) => a.chapter_order - b.chapter_order);
+  const idx    = sorted.findIndex(c => c.id === selectedId);
+  const swap   = idx + dir;
+  if (swap < 0 || swap >= sorted.length) return;
+  [sorted[idx].chapter_order, sorted[swap].chapter_order] =
+  [sorted[swap].chapter_order, sorted[idx].chapter_order];
+  await Promise.all([sorted[idx], sorted[swap]].map(ch =>
+    fetch('/api/admin', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+      body: JSON.stringify(ch)
+    })
+  ));
+  await loadChapters();
+  toast('Order updated');
+}
+
+/* ── SETTINGS ── */
+function openSettings() {
+  selectedId = null;
+  showPane('settings');
+  document.getElementById('settings-item').classList.add('active');
+  renderSidebar();
+}
+
+function saveSettings() {
+  toast('Settings saved — update your Vercel env vars for password changes');
+}
+
+/* ── UI HELPERS ── */
+function showPane(name) {
+  document.getElementById('pane-empty').classList.add('hidden');
+  document.getElementById('pane-editor').classList.add('hidden');
+  document.getElementById('pane-settings').classList.add('hidden');
+  document.getElementById('settings-item').classList.remove('active');
+  if (name === 'empty')    { document.getElementById('pane-empty').classList.remove('hidden'); document.getElementById('pane-empty').style.display='flex'; }
+  if (name === 'editor')   document.getElementById('pane-editor').classList.remove('hidden');
+  if (name === 'settings') document.getElementById('pane-settings').classList.remove('hidden');
+}
+
+function updateBadge(published) {
+  const badge  = document.getElementById('status-badge');
+  const pubBtn = document.getElementById('publish-btn');
+  const unpBtn = document.getElementById('unpublish-btn');
+  const ch     = chapters.find(c => c.id === selectedId);
+  if (ch) ch.published = published;
+  if (published) {
+    badge.textContent = 'Published'; badge.className = 'badge badge-published';
+    pubBtn.classList.add('hidden'); unpBtn.classList.remove('hidden');
+  } else {
+    badge.textContent = 'Draft'; badge.className = 'badge badge-draft';
+    pubBtn.classList.remove('hidden'); unpBtn.classList.add('hidden');
+  }
+}
+
+function updateWC() {
+  const t = document.getElementById('ch-body').value;
+  const n = t.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('wc').textContent = n.toLocaleString() + ' words';
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue=''; } });
+</script>
+</body>
+</html>

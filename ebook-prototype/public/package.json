@@ -1,0 +1,8 @@
+{
+  "name": "ebook-site",
+  "version": "1.0.0",
+  "description": "eBook publishing site with Neon database",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0"
+  }
+}
